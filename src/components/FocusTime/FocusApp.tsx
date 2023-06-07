@@ -27,11 +27,11 @@ function getTimeIntervals(
   );
 }
 
-function getFocusBlockKey(block: FocusBlock) {
+function getFocusBlockKey(block: FocusBlockDetails) {
   return "focus-block(" + block.startTime.getTime() + ")";
 }
 
-interface FocusBlock {
+interface FocusBlockDetails {
   startTime: Date;
   endTime: Date;
   blockTitle: string;
@@ -64,8 +64,8 @@ const FocusApp = () => {
     return [topPercent, 100 - botPercent];
   };
 
-  const [focusBlocks, setFocusBlocks] = useState<FocusBlock[]>([]);
-  const [selectedBlock, setSelectedBlock] = useState<FocusBlock>();
+  const [focusBlocks, setFocusBlocks] = useState<FocusBlockDetails[]>([]);
+  const [selectedBlock, setSelectedBlock] = useState<FocusBlockDetails>();
   const addFocusBlock = (startDate: Date) => {
     console.log(startDate);
 
@@ -82,7 +82,7 @@ const FocusApp = () => {
       if (
         (blockStart < startDateTime && blockEnd > startDateTime) ||
         (blockStart < endTime.getTime() && blockEnd > endTime.getTime()) ||
-        (blockStart == startDateTime && blockEnd == endTime.getTime())
+        (blockStart === startDateTime && blockEnd === endTime.getTime())
       ) {
         hasConflict = true;
         break;
@@ -96,7 +96,7 @@ const FocusApp = () => {
       let botPercent =
         (100 * (intervalNumber + lengthInIntervals)) / intervals.length;
 
-      let newBlock: FocusBlock = {
+      let newBlock: FocusBlockDetails = {
         startTime: startDate,
         endTime: endTime,
         blockTitle: "New block",
@@ -118,7 +118,7 @@ const FocusApp = () => {
         onClick={() => setSelectedBlock(block)}
         isSelected={
           selectedBlock != null &&
-          getFocusBlockKey(selectedBlock) == getFocusBlockKey(block)
+          getFocusBlockKey(selectedBlock) === getFocusBlockKey(block)
         }
       />
     )),
@@ -132,7 +132,7 @@ const FocusApp = () => {
   ];
 
   const onBlockChange = (
-    block: FocusBlock,
+    block: FocusBlockDetails,
     startTime: Date,
     endTime: Date,
     blockTitle: string,
@@ -140,12 +140,12 @@ const FocusApp = () => {
   ) => {
     let editedBlockKey = getFocusBlockKey(block);
     var otherBlocks = focusBlocks.filter(
-      (val) => getFocusBlockKey(val) != editedBlockKey
+      (val) => getFocusBlockKey(val) !== editedBlockKey
     );
 
     let [top, bot] = calculatePosition(startTime, endTime);
 
-    let newBlock: FocusBlock = {
+    let newBlock: FocusBlockDetails = {
       startTime,
       endTime,
       blockTitle,
@@ -174,7 +174,7 @@ const FocusApp = () => {
           <div className="block-section">{blockSectionChildren}</div>
         </div>
         <div className="selected-focus-block">
-          {selectedBlock != undefined && (
+          {selectedBlock !== undefined && (
             <BlockView
               {...selectedBlock}
               timeOptions={10}
