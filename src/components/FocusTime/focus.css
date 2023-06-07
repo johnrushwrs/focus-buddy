@@ -1,0 +1,124 @@
+.focus-section {
+    background-color: var(--modal-color);
+    padding: 25px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: flex-start;
+    position: absolute;
+    left: 5%;
+    right: 5%;
+}
+
+.intervals {
+    flex: 1.5;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-auto-rows: max-content;
+}
+
+:root {
+    --block-border-style: 1px solid black;
+}
+
+/* block row common stylings */
+.intervals .label,
+.intervals .block-section .time-block 
+{
+    border: var(--block-border-style);
+    border-bottom-width: 0px;
+    font-weight: bold;
+    padding: 15px;
+}
+
+.block-labels,
+.block-section
+{
+    display: flex;
+    flex-direction: column;
+}
+
+/* block labels */
+.intervals .block-labels {
+    flex: 1;
+    max-width: fit-content;
+}
+
+.intervals .label {
+    border-bottom-width: 0px;
+    border-right-width: 0px;
+    flex: 1;
+}
+
+.intervals .label:last-child,
+.intervals .time-block:last-child {
+    border-bottom-width: 1px;
+}
+
+/* block sections */
+.block-section {
+    position: relative;
+}
+
+.time-block {
+    border-bottom-width: 0px;
+    flex: 1;
+}
+
+.time-block:hover {
+    background-color: antiquewhite;
+}
+
+.focus-block {
+    position: absolute;
+    top: 0%;
+    bottom: 50%;
+    left: 5%;
+    right: 5%;
+    background-color: rgb(102, 51, 153, .65);
+    margin: 10px;
+    padding: 10px;
+    text-align: center;
+}
+
+.focus-block .title {
+    font-size: medium;
+    margin-right: 10px;
+    display: inline-block;
+}
+
+.focus-block .time {
+    font-size: medium;
+}
+
+.focus-block.selected {
+    font-weight: bold;
+    border: 3px solid orangered;
+}
+
+.selected-focus-block {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+}
+
+.test-section {
+    position: absolute;
+    left: 5%;
+    right: 5%;
+    top: 50%;
+    /* height: 100%; */
+    bottom: 0%;
+}
+
+.test-section .bot {
+    position: absolute;
+    background-color: red;
+    top: 50%;
+    height: 100px;
+}
+
+.block-view {
+    padding: 25px;
+}
