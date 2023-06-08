@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ChangeEventHandler, useState } from "react";
 import "./focus.css";
 import FocusBlock from "./FocusBlock";
 import TimeBlock from "./TimeBlock";
@@ -41,14 +41,6 @@ interface FocusBlockDetails {
 }
 
 const FocusApp = () => {
-  const startTime = Date.now();
-  const startDate = new Date(getNearestHour(startTime));
-
-  const intervals = getTimeIntervals(
-    startDate.getTime(),
-    intervalLengthInMinutes
-  );
-
   const calculatePosition = (startDate: Date, endDate: Date): number[] => {
     let timeInInterval = intervalLengthInMinutes * 60 * 1000;
     let startTime = startDate.getTime();
@@ -64,8 +56,29 @@ const FocusApp = () => {
     return [topPercent, 100 - botPercent];
   };
 
+  const startTime = Date.now();
+  const [startDate, setStartDate] = useState<Date>(
+    new Date(getNearestHour(startTime))
+  );
+  const intervals = getTimeIntervals(
+    startDate.getTime(),
+    intervalLengthInMinutes
+  );
+
+  const onStartDateChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    let inputDate: Date | null = event.target.valueAsDate;
+    console.log(inputDate);
+    if (inputDate !== null) {
+      let newDate: Date = new Date(Date.now());
+      newDate.setHours(inputDate.getUTCHours());
+      newDate.setMinutes(0);
+      setStartDate(newDate);
+    }
+  };
+
   const [focusBlocks, setFocusBlocks] = useState<FocusBlockDetails[]>([]);
   const [selectedBlock, setSelectedBlock] = useState<FocusBlockDetails>();
+
   const addFocusBlock = (startDate: Date) => {
     console.log(startDate);
 
@@ -160,6 +173,15 @@ const FocusApp = () => {
   return (
     <div>
       <h1>Focus time Organizer</h1>
+      <span>
+        Start time{" "}
+        <input
+          type={"time"}
+          value={getHourMinuteString(startDate)}
+          placeholder={getHourMinuteString(startDate)}
+          onChange={onStartDateChange}
+        />
+      </span>
       <div className="focus-section">
         <div className="intervals">
           <div className="block-labels">

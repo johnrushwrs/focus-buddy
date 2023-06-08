@@ -1,4 +1,4 @@
-import React from "react";
+import React, { CSSProperties } from "react";
 import { getHourMinuteString } from "./Utils";
 
 interface Props {
@@ -24,6 +24,14 @@ const FocusBlock = ({
 }: Props) => {
   const blockStyle = { top: `${topPercent}%`, bottom: `${botPercent}%` };
 
+  let intervalLength = 15 * 60 * 1000;
+  let numIntervals = (endTime.getTime() - startTime.getTime()) / intervalLength;
+  const numDetailsLinesToDisplay = (numIntervals - 1) * 2;
+  const detailsStyling: CSSProperties = {
+    WebkitLineClamp: numDetailsLinesToDisplay,
+    visibility: numDetailsLinesToDisplay === 0 ? "hidden" : "visible",
+  };
+
   return (
     <div
       className={isSelected ? "focus-block selected" : "focus-block"}
@@ -34,6 +42,9 @@ const FocusBlock = ({
       <span className="time">
         {getHourMinuteString(startTime)} - {getHourMinuteString(endTime)}
       </span>
+      <p className="details" style={detailsStyling}>
+        {details}
+      </p>
     </div>
   );
 };

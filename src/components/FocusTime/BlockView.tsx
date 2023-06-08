@@ -45,6 +45,13 @@ const BlockView = ({
     onBlockChange(startTime, newEndDate, blockTitle, details);
   };
 
+  const onDetailsChange: React.ChangeEventHandler<HTMLTextAreaElement> = (
+    event
+  ) => {
+    let newDetails = event.target.value;
+    onBlockChange(startTime, endTime, blockTitle, newDetails);
+  };
+
   return (
     <div className="block-view">
       <div className="title-and-time">
@@ -53,10 +60,18 @@ const BlockView = ({
           <label htmlFor="startTime">
             <select name="startTime" id="startTime" onChange={onStartChange}>
               {Array.from({ length: timeOptions }, (v, index) => {
-                let timeOption = addMinutesToDate(startTime, index * 15);
+                let calculatedIndex = index - timeOptions / 2;
+                let timeOption = addMinutesToDate(
+                  startTime,
+                  calculatedIndex * 15
+                );
                 let timeString = timeOption.toISOString();
                 return (
-                  <option value={timeString} key={timeString}>
+                  <option
+                    value={timeString}
+                    key={timeString}
+                    selected={calculatedIndex === 0}
+                  >
                     {getHourMinuteString(timeOption)}
                   </option>
                 );
@@ -66,10 +81,14 @@ const BlockView = ({
           <label htmlFor="endTime">
             <select name="endTime" id="endTime" onChange={onEndChange}>
               {Array.from({ length: timeOptions }, (v, index) => {
-                let timeOption = addMinutesToDate(endTime, (index - 1) * 15);
+                let timeOption = addMinutesToDate(startTime, (index + 1) * 15);
                 let timeString = timeOption.toISOString();
                 return (
-                  <option value={timeString} key={timeString}>
+                  <option
+                    value={timeString}
+                    key={timeString}
+                    selected={timeOption.getTime() === endTime.getTime()}
+                  >
                     {getHourMinuteString(timeOption)}
                   </option>
                 );
@@ -78,7 +97,11 @@ const BlockView = ({
           </label>
         </div>
       </div>
-      <span className="details">{details}</span>
+      <textarea
+        className="details"
+        value={details}
+        onChange={onDetailsChange}
+      ></textarea>
     </div>
   );
 };
