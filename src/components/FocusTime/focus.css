@@ -11,7 +11,7 @@
 }
 
 .intervals {
-    flex: 1.5;
+    flex: 1.5 1.5;
     display: grid;
     grid-template-columns: auto 1fr;
     grid-auto-rows: max-content;
@@ -138,6 +138,8 @@
 
 .block-view {
     padding: 25px;
+    border: 3px dotted black;
+    margin-left: 10px;
 }
 
 .block-view .details {
@@ -146,4 +148,36 @@
     max-width: max-content;
     min-width: max-content;
     max-height: 50%;
+}
+
+.time-inputs {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    font-size: medium;
+    border-bottom: 1px solid black;
+    padding-bottom: 10px;
+}
+
+.time-input span {
+    display: block;
+}
+
+.details-section span {
+    display: block;
+}
+
+.block-view .title-and-time {
+    margin-bottom: 10px;
+}
+
+.block-view input.title {
+    border: none;
+    border-bottom: 1px solid black;
+    padding: 10px;
+    font-size: medium;
+    background: none;
+    font-weight: bold;
+    margin-bottom: 10px;
+    /* appearance: none; */
 }

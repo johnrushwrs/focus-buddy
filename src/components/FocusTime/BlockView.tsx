@@ -109,35 +109,47 @@ const BlockView = ({
       <div className="title-and-time">
         <input className="title" onChange={onTitleChange} value={blockTitle} />
         <div className="time-inputs">
-          <label htmlFor="startTime">
-            <select
-              name="startTime"
-              id="startTime"
-              onChange={onStartChange}
-              value={startTime.toISOString()}
-              data-testid="startTime"
-            >
-              {createTimeOptions(timeOptions.minStartTime, numStartTimeOptions)}
-            </select>
-          </label>
-          <label htmlFor="endTime">
-            <select
-              name="endTime"
-              id="endTime"
-              onChange={onEndChange}
-              value={endTime.toISOString()}
-              data-testid="endTime"
-            >
-              {createTimeOptions(firstEndTime, numEndTimeOptions)}
-            </select>
-          </label>
+          <div className="time-input">
+            <span>Start</span>
+            <label htmlFor="startTime">
+              <select
+                name="startTime"
+                id="startTime"
+                onChange={onStartChange}
+                value={startTime.toISOString()}
+                data-testid="startTime"
+              >
+                {createTimeOptions(
+                  timeOptions.minStartTime,
+                  numStartTimeOptions
+                )}
+              </select>
+            </label>
+          </div>
+          <div className="time-input">
+            <span>End</span>
+            <label htmlFor="endTime">
+              <select
+                name="endTime"
+                id="endTime"
+                onChange={onEndChange}
+                value={endTime.toISOString()}
+                data-testid="endTime"
+              >
+                {createTimeOptions(firstEndTime, numEndTimeOptions)}
+              </select>
+            </label>
+          </div>
         </div>
       </div>
-      <textarea
-        className="details"
-        value={details}
-        onChange={onDetailsChange}
-      ></textarea>
+      <div className="details-section">
+        <span>Notes</span>
+        <textarea
+          className="details"
+          value={details}
+          onChange={onDetailsChange}
+        ></textarea>
+      </div>
     </div>
   );
 };

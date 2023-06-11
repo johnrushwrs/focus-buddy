@@ -65,6 +65,7 @@ interface TimeOptions {
   minStartTime: Date;
   maxEndTime: Date;
   intervalLengthInMinutes: number;
+  block: FocusBlockDetails;
 }
 
 const FocusApp = () => {
@@ -115,11 +116,14 @@ const FocusApp = () => {
   // ensures that we set the time options after selecting
   // and updating the selected block
   useEffect(() => {
-    if (selectedBlock !== undefined) {
+    if (
+      (selectedBlock !== null && timeOptions === undefined) ||
+      (timeOptions !== null && timeOptions?.block !== selectedBlock)
+    ) {
       var selectedIndex = 0;
       for (let i = 0; i < focusBlocks.length; i++) {
         if (
-          getFocusBlockKey(selectedBlock) === getFocusBlockKey(focusBlocks[i])
+          getFocusBlockKey(selectedBlock!) === getFocusBlockKey(focusBlocks[i])
         ) {
           selectedIndex = i;
           break;
@@ -132,13 +136,12 @@ const FocusApp = () => {
         startDate,
         endDate
       );
-      setTimeOptions(newTimeOptions);
+
+      setTimeOptions({ ...newTimeOptions, block: selectedBlock! });
     }
-  }, [focusBlocks, selectedBlock, startDate, endDate]);
+  }, [focusBlocks, selectedBlock, startDate, endDate, timeOptions]);
 
   const addFocusBlock = (startDate: Date) => {
-    console.log(startDate);
-
     var startDateTime = startDate.getTime();
     let endTime = addMinutesToDate(startDate, intervalLengthInMinutes);
     let timeInInterval = intervalLengthInMinutes * 60 * 1000;
