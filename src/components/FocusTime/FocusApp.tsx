@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, useState } from "react";
+import React, { ChangeEventHandler, useEffect, useState } from "react";
 import "./focus.css";
 import FocusBlock from "./FocusBlock";
 import TimeBlock from "./TimeBlock";
@@ -31,6 +31,27 @@ function getFocusBlockKey(block: FocusBlockDetails) {
   return "focus-block(" + block.startTime.getTime() + ")";
 }
 
+// assumes that the time options are sorted and
+// not conflicted
+const calculateTimeOptions = (
+  blocks: FocusBlockDetails[],
+  selectedIndex: number,
+  startDate: Date,
+  endDate: Date
+) => {
+  let minStartTime = startDate;
+  if (blocks.length > 1 && selectedIndex > 0) {
+    minStartTime = blocks[selectedIndex - 1].endTime;
+  }
+
+  let maxEndTime = endDate;
+  if (blocks.length > 1 && selectedIndex < blocks.length - 1) {
+    maxEndTime = blocks[selectedIndex + 1].startTime;
+  }
+
+  return { minStartTime, maxEndTime, intervalLengthInMinutes };
+};
+
 interface FocusBlockDetails {
   startTime: Date;
   endTime: Date;
@@ -38,6 +59,12 @@ interface FocusBlockDetails {
   details: string;
   topPercent: number;
   botPercent: number;
+}
+
+interface TimeOptions {
+  minStartTime: Date;
+  maxEndTime: Date;
+  intervalLengthInMinutes: number;
 }
 
 const FocusApp = () => {
@@ -60,6 +87,10 @@ const FocusApp = () => {
   const [startDate, setStartDate] = useState<Date>(
     new Date(getNearestHour(startTime))
   );
+  const endDate = addMinutesToDate(
+    startDate,
+    intervalLengthInMinutes * numIntervals
+  );
   const intervals = getTimeIntervals(
     startDate.getTime(),
     intervalLengthInMinutes
@@ -72,12 +103,38 @@ const FocusApp = () => {
       let newDate: Date = new Date(Date.now());
       newDate.setHours(inputDate.getUTCHours());
       newDate.setMinutes(0);
+      newDate.setSeconds(0);
       setStartDate(newDate);
     }
   };
 
   const [focusBlocks, setFocusBlocks] = useState<FocusBlockDetails[]>([]);
   const [selectedBlock, setSelectedBlock] = useState<FocusBlockDetails>();
+  const [timeOptions, setTimeOptions] = useState<TimeOptions>();
+
+  // ensures that we set the time options after selecting
+  // and updating the selected block
+  useEffect(() => {
+    if (selectedBlock !== undefined) {
+      var selectedIndex = 0;
+      for (let i = 0; i < focusBlocks.length; i++) {
+        if (
+          getFocusBlockKey(selectedBlock) === getFocusBlockKey(focusBlocks[i])
+        ) {
+          selectedIndex = i;
+          break;
+        }
+      }
+
+      let newTimeOptions = calculateTimeOptions(
+        focusBlocks,
+        selectedIndex,
+        startDate,
+        endDate
+      );
+      setTimeOptions(newTimeOptions);
+    }
+  }, [focusBlocks, selectedBlock, startDate, endDate]);
 
   const addFocusBlock = (startDate: Date) => {
     console.log(startDate);
@@ -118,7 +175,10 @@ const FocusApp = () => {
         botPercent: 100 - botPercent,
       };
 
-      setFocusBlocks([...focusBlocks, newBlock]);
+      let newBlocks = [...focusBlocks, newBlock];
+      newBlocks.sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
+
+      setFocusBlocks(newBlocks);
       setSelectedBlock(newBlock);
     }
   };
@@ -158,6 +218,10 @@ const FocusApp = () => {
 
     let [top, bot] = calculatePosition(startTime, endTime);
 
+    let isSelectedBlock =
+      selectedBlock != null &&
+      getFocusBlockKey(block) === getFocusBlockKey(selectedBlock);
+
     let newBlock: FocusBlockDetails = {
       startTime,
       endTime,
@@ -166,8 +230,15 @@ const FocusApp = () => {
       topPercent: top,
       botPercent: bot,
     };
-    setFocusBlocks([newBlock, ...otherBlocks]);
-    setSelectedBlock(newBlock);
+
+    let newBlocks = [newBlock, ...otherBlocks];
+    newBlocks.sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
+
+    if (isSelectedBlock) {
+      setSelectedBlock(newBlock);
+    }
+
+    setFocusBlocks(newBlocks);
   };
 
   return (
@@ -196,10 +267,10 @@ const FocusApp = () => {
           <div className="block-section">{blockSectionChildren}</div>
         </div>
         <div className="selected-focus-block">
-          {selectedBlock !== undefined && (
+          {selectedBlock !== undefined && timeOptions !== undefined && (
             <BlockView
               {...selectedBlock}
-              timeOptions={10}
+              timeOptions={timeOptions!}
               onBlockChange={(start, end, title, details) =>
                 onBlockChange(selectedBlock, start, end, title, details)
               }
